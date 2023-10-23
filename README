@@ -1,0 +1,19 @@
+################################################################################
+################################################################################
+	README
+################################################################################
+################################################################################
+
+# Overview #
+############
+
+I just have a ZWO ASI120MC-S to play with so far.  For this camera,
+I'm planning on using the ZWO SDK on a raspberry pi.  That being the
+case, install the SDK!  For my build system, put the
+ASI_linux_mac_SDK* directory extracted from the downloaded SDK (see
+https://www.zwoastro.com/downloads/developers) in /opt.  For example,
+
+  sudo cp -r ASI_linux_mac_SDK_V1.31 /opt
+
+Add the appropriate library directory to /etc/ld.so.conf and 'sudo ldconfg'.
+
