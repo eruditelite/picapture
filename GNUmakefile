@@ -4,7 +4,7 @@
 ################################################################################
 ################################################################################
 
-CFLAGS = -I/opt/ASI_linux_mac_SDK/include
+CFLAGS = -Wall -O -ggdb -g3 -I/opt/ASI_linux_mac_SDK/include
 
 # Only two architectures are considered...  aarch64 (armv8) and x86_64 (x64).
 

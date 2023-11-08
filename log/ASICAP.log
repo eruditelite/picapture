@@ -1,0 +1,453 @@
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The system is : 
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Linux
+[2023-11-08 16:21:48] INFO  (0x0000000001797e58) SLog (:-1)] - Histogram Thread is running
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure range comboBox value is changed to 32us~10ms
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Get the exposure range of 32us~10ms :[32,10000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Get the suitable unit (us)(1) of range [32,10000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The current exposure value 0 is less than the min value 32
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Because the exposure range is changed, so refresh the value of SpinBox and Slider
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the value 32 to SpinBox and the change of SpinBox will invoke the change of slider
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure spinbox value changed, the current value is 32 * 1
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure time 32 was changed to 32 in us
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure slider value changed, the current value is 32
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure slider value changed but the value is as same as the last:32,so return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the SpinBox according to the ComboBox:[32,10000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the Slider according to the ComboBox:[32,10000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Because the current value is out of range, so set the edge value of the range edge, the value is:32
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure range comboBox value is changed to 1~100ms
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Get the exposure range of 1~100ms :[1000,100000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Get the suitable unit (ms)(1000) of range [1000,100000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The current exposure value 32 is less than the min value 1000
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Because the exposure range is changed, so refresh the value of SpinBox and Slider
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - In order to set the value 1000 to SpinBox, the SpinBox's min range changed to be 1(Because the current unit is (ms))
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the value 1 to SpinBox and the change of SpinBox will invoke the change of slider
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure spinbox value changed, the current value is 1 * 1000
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure time 1 was changed to 1000 in us
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure slider value changed, the current value is 1000
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure slider value changed but the value is as same as the last:1000,so return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the SpinBox according to the ComboBox:[1,100]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the Slider according to the ComboBox:[1000,100000]
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Because the current value is out of range, so set the edge value of the range edge, the value is:1000
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - The record files default save path is : /home/john/ASICAP
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: Slider value changed to be 5
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: Slider value changed to be 50
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: edit value changed to be 0.1
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: change the slider value to be 5 homologously
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: Slider value changed to be 5
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: the value not comes from setting value and do not send signal
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: edit value changed to be 1
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: change the slider value to be 50 homologously
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Gamma: Slider value changed to be 50
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Gamma: the time interval is less than 100ms and return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Contrast: Slider value changed to be 20
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Contrast: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Contrast: edit value changed to be 1
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Contrast: change the slider value to be 20 homologously
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Contrast: the value not comes from setting value and do not send signal
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Brightness: Slider value changed to be 127
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Brightness: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Display Brightness: edit value changed to be 1
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Brightness: change the slider value to be 127 homologously
+[2023-11-08 16:21:48] INFO  (0x000000000155fa70) SLog (:-1)] - Display Brightness: the value not comes from setting value and do not send signal
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - The version is : V1.6.2
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - 1 cameras detected
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - ZWO ASI120MC-S(ID:0) was detected.
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - Record: setBayer init: 0
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - SDK version : 1, 14, 0315
+[2023-11-08 16:21:50] INFO  (0x000000000155fa70) SLog (:-1)] - Set ZWO ASI120MC-S(ID:0) as the current camera
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - >>> open button was clicked, the camera ID is 0
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: OpenCamera, Value: 0
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - Set action: 0
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - Start to capture of camera 0
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - ==========Open camera and start to get video==========(Camera ID:0)
+[2023-11-08 16:21:51] INFO  (0x000000000155fa70) SLog (:-1)] - Open camera succeessfully.
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Initialize camera succeessfully.
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The camera status:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the control caps
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The number of controls is : 14,it displays as follows : 
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   Gain : Gain
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   Exposure : Exposure Time(us)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:2000000000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:64
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:14000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:2000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   WB_R : White balance: Red component
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:3
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:52
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:52
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   WB_B : White balance: Blue component
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:4
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   Offset : offset
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:5
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:20
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   BandWidth : The total data transfer rate percentage
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:6
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:40
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   Flip : Flip: 0->None 1->Horiz 2->Vert 3->Both
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:9
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:3
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   OverCLK : Over clocking percentage
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:7
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   AutoExpMaxGain : Auto exposure maximum gain value
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:10
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   AutoExpMaxExpMS : Auto exposure maximum exposure value(unit ms)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:11
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:60000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   AutoExpTargetBrightness : Auto exposure target brightness value
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:12
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:160
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   HighSpeedMode : Is high speed mode:0->No 1->Yes
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:14
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   MonoBin : bin R G G B to one pixel for color camera, color will loss
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:18
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -   Temperature : Sensor temperature(degrees Celsius)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       ControlType:8
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Max Value:1000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Min Value:-500
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Default Value:20
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsAutoSupported:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       IsWritable:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current Value:312
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] -       Current IsAuto:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Failed to get serial number of camera ID 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The start position X is : 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The start position Y is : 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The ROI param is,Width : 1280,Height : 960,Bin : 1,Image Type is : 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The buffer size is : 1228800
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Start video capture
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Start video capture successfully
+[2023-11-08 16:21:52] INFO  (0x0000000003ca6ad0) SLog (:-1)] - run image capture thread(Camera ID:0)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Received camera and image parameters and set them to control panels
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Gain: Slider value changed to be 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Gain: edit value changed to be 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: change the slider value to be 50 homologously
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: the value not comes from setting value and do not send signal
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Gain: edit value changed to be 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: change the slider value to be 0 homologously
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> Gain: Slider value changed to be 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: Slider's value change is not triggered by action, return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Gain: the time interval is less than 100ms and return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure range comboBox value is changed to 32us~10ms
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the exposure range of 32us~10ms :[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the suitable unit (us)(1) of range [32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Because the exposure range is changed, so refresh the value of SpinBox and Slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - In order to set the value 1000 to SpinBox, the SpinBox's max range changed to be 1000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the value 1000 to SpinBox and the change of SpinBox will invoke the change of slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure spinbox value changed, the current value is 1000 * 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure time 1000 was changed to 1000 in us
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Send the exposure time:1000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Exposure, Value: 1000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Exposure
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Exposure, control value:1000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Exposure, value: 1000, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 1, value: 1000, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 1, value: 1000, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Exposure:1000 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the SpinBox according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the Slider according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the exposure range of 32us~10ms :[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the suitable unit (us)(1) of range [32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Because the exposure range is changed, so refresh the value of SpinBox and Slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the value 1000 to SpinBox and the change of SpinBox will invoke the change of slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the SpinBox according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the Slider according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure slider value changed, the current value is 2000
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure spinbox value changed, the current value is 2000 * 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure time 2000 was changed to 2000 in us
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused ASI_CONTROL_TYPE From Camera! ASI_CONTROL_TYPE: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused ASI_CONTROL_TYPE From Camera! ASI_CONTROL_TYPE: 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: WB(R), Value: 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: WB(R)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:WB(R), control value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: WB(R), value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 3, value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 3, value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set WB(R):1 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: WB(R), Value: 52
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: WB(R)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:WB(R), control value:52
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: WB(R), value: 52, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 3, value: 52, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 3, value: 52, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set WB(R):52 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: WB(B), Value: 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: WB(B)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:WB(B), control value:1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: WB(B), value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 4, value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 4, value: 1, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set WB(B):1 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: WB(B), Value: 95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: WB(B)
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:WB(B), control value:95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: WB(B), value: 95, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 4, value: 95, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 4, value: 95, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set WB(B):95 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: USB Traffic, Value: 40
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: USB Traffic
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:USB Traffic, control value:40
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: USB Traffic, value: 40, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 6, value: 40, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 6, value: 40, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set USB Traffic:40 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: USB Traffic, Value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: USB Traffic
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:USB Traffic, control value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: USB Traffic, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 6, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 6, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set USB Traffic:50 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Max Gain, Value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Max Gain
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Max Gain, control value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Max Gain, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 10, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 10, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Max Gain:50 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Max Exposure, Value: 30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Max Exposure
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Max Exposure, control value:30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Max Exposure, value: 30, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 11, value: 30, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 11, value: 30, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Max Exposure:30 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Target Brightness, Value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Target Brightness
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Target Brightness, control value:50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Target Brightness, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 12, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 12, value: 50, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Target Brightness:50 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Target Brightness, Value: 100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Target Brightness
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Target Brightness, control value:100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Target Brightness, value: 100, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 12, value: 100, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 12, value: 100, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Target Brightness:100 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Flip, Value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Flip
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Flip, control value:0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Flip, value: 0, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 9, value: 0, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 9, value: 0, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Flip:0 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Capture in raw:0, Image type:0, so the default image format is:PNG, the default video format is:AVI
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set bayer pattern to Debayer algorithm : GRBG, enum:2
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - recover the parameters
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the exposure range of 32us~10ms :[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get the suitable unit (us)(1) of range [32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Because the exposure range is changed, so refresh the value of SpinBox and Slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the value 2000 to SpinBox and the change of SpinBox will invoke the change of slider
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the SpinBox according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set the suitable range for the Slider according to the ComboBox:[32,10000]
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure slider value changed, the current value is 3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - >>> The exposure spinbox value changed, the current value is 3172 * 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure time 3172 was changed to 3172 in us
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - The exposure send interval is less than 200ms and the force flag is false, so return directly
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Send the exposure time:3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Exposure, Value: 3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Not Auto Setting Item: Exposure
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set control value: camera ID:0, control name:Exposure, control value:3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, camera ID: 0, type: Exposure, value: 3172, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - setControlValue, type: 1, value: 3172, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - set Control Value to SDK, type: 1, value: 3172, auto: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Exposure:3172 successfully
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: Add Timestamp, Value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Set Add Timestamp: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Add Timestamp and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto Brightness and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto USB Traffic and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto White Balance and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Brightness and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused: Capture in RAW format In The setControlsValue Of Control More
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Capture in RAW format and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused: Debayer View In The setControlsValue Of Control More
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Debayer View and the value: 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused: Exposure In The setControlsValue Of Control More
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Exposure and the value: 3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Flip and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Get Unused: Gain In The setControlsValue Of Control More
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Gain and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Hardware Bin and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: High Speed and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Max Exposure and the value: 30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Max Gain and the value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Mono Bin and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Target Brightness and the value: 100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: USB Traffic and the value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: WB(B) and the value: 95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: WB(R) and the value: 52
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Add Timestamp and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto Brightness and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto USB Traffic and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Auto White Balance and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Brightness and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Capture in RAW format and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Debayer View and the value: 1
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Exposure and the value: 3172
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Flip and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Gain and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Hardware Bin and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: High Speed and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Max Exposure and the value: 30
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Max Gain and the value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Mono Bin and the value: 0
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: Target Brightness and the value: 100
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: USB Traffic and the value: 50
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: WB(B) and the value: 95
+[2023-11-08 16:21:52] INFO  (0x000000000155fa70) SLog (:-1)] - Read the item: WB(R) and the value: 52
+[2023-11-08 16:22:33] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:33] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:33] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:33] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:33] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:34] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:34] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:34] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:34] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:34] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:35] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:35] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:35] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:35] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:36] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:36] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:36] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:36] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:36] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:37] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:37] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:37] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: zoom in, Value: 0
+[2023-11-08 16:22:50] INFO  (0x000000000155fa70) SLog (:-1)] - USB device changed
+[2023-11-08 16:22:50] INFO  (0x000000000155fa70) SLog (:-1)] - Start the timer of device change
+[2023-11-08 16:22:51] INFO  (0x000000000155fa70) SLog (:-1)] - Stop the timer of device change, check and upate camera list
+[2023-11-08 16:22:51] INFO  (0x000000000155fa70) SLog (:-1)] - 1 cameras detected
+[2023-11-08 16:22:51] INFO  (0x000000000155fa70) SLog (:-1)] - ZWO ASI120MC-S(ID:0) was detected.
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Close event is triggered.
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - >>> close button was clicked, the camera ID is 0
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Set camera param, Name: CloseCamera, Value: 0
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Set action: 1
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Start to save camera settings to config file
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Save camera settings completed
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Stop to capture of camera 0
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Prepare to stop ImageCaptureThread(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageCaptureThread is running(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Wait for ImageCaptureThread::run while loop(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x0000000003ca6ad0) SLog (:-1)] - exit ImageCaptureThread::run(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageCaptureThread::run jumped while loop(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - The video capture is stopped
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Camera close successfully
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageCaptureThread stopped successfully(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Prepare to quit ctrl module
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Prepare to stop ImageCaptureThread(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageCaptureThread stopped successfully(Camera ID:0)
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - It's OK to quit ctrl module
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Close ctrl module successfully and will close the gui module
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Prepare to stop HistogramThread
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - HistogramThread is running
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Wait for HistogramThread::run while loop
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - HistogramThread::run jumped while loop
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Stop HistogramThread successfully
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Prepare to stop ImageShowThread
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageShowThread is running
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Wait for ImageShowThread::run while loop
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - ImageShowThread::run jumped while loop
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Stop ImageShowThread successfully
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Quit the application
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - USB device changed
+[2023-11-08 16:22:55] INFO  (0x000000000155fa70) SLog (:-1)] - Start the timer of device change
