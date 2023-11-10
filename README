@@ -17,3 +17,10 @@ https://www.zwoastro.com/downloads/developers) in /opt.  For example,
 
 Add the appropriate library directory to /etc/ld.so.conf and 'sudo ldconfg'.
 
+# Notes #
+#########
+
+## 1 ##
+#######
+
+Auto exposure isn´t available for snapshots, only for video.

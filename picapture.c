@@ -144,7 +144,7 @@ static int capture(char *options)
 					 info.MaxWidth, info.MaxHeight,
 					 1, type));
 		ASI_CALL(ASISetControlValue(camera, ASI_EXPOSURE,
-					    exposure, ASI_TRUE));
+					    exposure, ASI_FALSE));
 
 		buffer_size = info.MaxWidth * info.MaxHeight;
 
