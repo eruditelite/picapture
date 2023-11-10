@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+
+import argparse, logging, os, re, sys
+import zwoasi as asi
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
+
+def script_info():
+    print("--> " + os.path.basename(__file__) +
+          " version is {:s}".format(__version__))
+    if os.path.isfile("/etc/os-release"):
+        osrf = open("/etc/os-release", "rt")
+        distribution = re.search("NAME=(.*)", osrf.read()).group(1)[1:-1]
+        osrf.seek(0)
+        version = re.search("VERSION_ID=(.*)", osrf.read()).group(1)[1:-1]
+        osrf.close()
+        print("--> running on " + distribution + ":" + version)
+    else:
+        print("--> running on something unknown (TODO: find out)")
+
+################################################################################
+## Functions for Modular Use
+################################################################################
+
+def info(camera):
+    info = camera.get_camera_property()
+    print('#### Info for %s ####\n' % (info['Name']))
+    for name in info.keys():
+        if name == 'Name':
+            continue
+        print('    %s:%s' % (name, info[name]))
+    controls = camera.get_controls()
+    for name in sorted(controls.keys()):
+        print('\n    [%s/%s]' % (name, controls[name]['ControlType']))
+        for key in sorted(controls[name].keys()):
+            if key == 'Name' or key == 'ControlType':
+                continue
+            print('        %s: %s' % (key, repr(controls[name][key])))
+
+def focus(camera, options):
+    print('focus(%s)' % options)
+
+################################################################################
+## capturing
+################################################################################
+
+def save_capture_settings(filename, settings):
+    filename += '.txt'
+    with open(filename, 'w') as f:
+        for k in sorted(settings.keys()):
+            f.write('%s: %s\n' % (k, str(settings[k])))
+
+def capture(camera, options):
+    info = camera.get_camera_property()
+    controls = camera.get_controls()
+    camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD, camera.get_controls()['BandWidth']['MinValue'])
+    camera.disable_dark_subtract()
+    camera.set_control_value(asi.ASI_EXPOSURE, 1000)
+    filename = 'image_color.png'
+    camera.stop_video_capture()
+    camera.stop_exposure()
+    camera.set_image_type(asi.ASI_IMG_RGB24)
+    camera.capture(filename=filename)
+    save_capture_settings(filename, camera.get_control_values())
+
+################################################################################
+## When Used as a Script
+################################################################################
+
+def main(argv):
+    # parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--loglevel', help="logger level",
+                        choices=['DEBUG', 'INFO', 'WARNING',
+                                 'ERROR', 'CRITICAL'], type=str.upper)
+    parser.add_argument("--logfile", help="file for logger output")
+    parser.add_argument('-v', '--version', help="display the version", action="store_true")
+    parser.add_argument('-c', '--command', help="what to do...", choices = ['list', 'info', 'focus', 'capture'], default="list")
+    args, unknown = parser.parse_known_args()
+
+    # set up the logger
+    if args.loglevel:
+        loglevel = getattr(logging, args.loglevel)
+    else:
+        loglevel = logging.root.level
+
+    logging.basicConfig(level=loglevel,
+                        format='%(filename)s - %(levelname)s - %(message)s')
+
+    if args.logfile:
+        logging.getLogger().addHandler(logging.FileHandler(args.logfile))
+
+    if args.version:
+        script_info()
+
+    asilib = os.getenv('ZWO_ASI_LIB')
+
+    if asilib:
+        asi.init(asilib)
+    else:
+        logging.error("ZWO_ASI_LIB must be the full path to libASICamera2.so!")
+        sys.exit(1)
+
+    num_cameras = asi.get_num_cameras()
+
+    if num_cameras == 0:
+        logging.error("No Cameras Found")
+        sys.exit(1)
+    else:
+        logging.info("Cameras Found: " + str(num_cameras))
+
+    cameras = asi.list_cameras()
+
+    if args.command == 'list':
+        for i in range(num_cameras):
+            print('%d : %s' % (i, cameras[i]))
+        sys.exit(0)
+
+    id = int(unknown[0])
+    if id < num_cameras:
+        camera = asi.Camera(id)
+    else:
+        logging.error('Invalid Camera ID')
+        sys.exit(1)
+
+    unknown.pop(0)
+
+    if args.command == 'info':
+        info(camera)
+    elif args.command == 'focus':
+        focus(camera, unknown)
+    elif args.command == 'capture':
+        capture(camera, unknown)
+    else:
+        logging.error("Unknown command: " + command)
+        sys.exit(1)
+
+    logging.info('Done!')
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

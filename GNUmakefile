@@ -1,25 +1,25 @@
 ################################################################################
+# GNUmakefile
+#
+# Makefile for all the scripts...
 ################################################################################
-#	GNUmakefile
-################################################################################
-################################################################################
 
-CFLAGS = -Wall -O -ggdb -g3 -I/opt/ASI_linux_mac_SDK/include
+TAG = $(shell git describe --tags --always --dirty)
 
-# Only two architectures are considered...  aarch64 (armv8) and x86_64 (x64).
+%.py: %.py.in
+	sed -e "s/__VERSION__/\"${TAG}\"/" $^ >$@
+	chmod 755 $@
 
-ifeq ($(shell uname -m), x86_64)
-LDFLAGS = -L/opt/ASI_linux_mac_SDK/lib/x64
-else ifeq ($(shell uname -m), aarch64)
-LDFLAGS = -L/opt/ASI_linux_mac_SDK/lib/armv8
-else
-$(error 'uname -m' must be either x86_64 or armv8!)
-endif
+%.py.d: %.py.in
+	@echo "$(shell echo $@ | sed -e 's/.d//') : $^" >$@
 
-all: picapture
+PYTHON_IN := $(shell find . -name '*.py.in')
+TARGETS = $(PYTHON_IN:.py.in=.py)
+deps = $(PYTHON_IN:.py.in=.py.d)
 
-picapture: picapture.c
-	gcc $(CFLAGS) $(LDFLAGS) -o $@ $< -lASICamera2
+all: $(TARGETS)
 
 clean:
-	rm -f *~ picapture
+	rm -f *~ $(TARGETS) *.d
+
+-include $(deps)
