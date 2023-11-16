@@ -1,7 +1,26 @@
 #!/usr/bin/env python3
 
-import argparse, logging, os, re, sys, threading, time
-import zwoasi as asi
+import argparse
+import logging
+import numpy as np
+import os
+import pickle
+import re
+import socketserver
+import sys
+import tempfile
+import threading
+import time
+import zwoasi
+
+from datetime import datetime
+from http import server
+from io import BytesIO
+from math import log2, pow
+from PIL import Image, ImageDraw, ImageFont, ImageStat
+from queue import Queue
+from threading import Condition, Thread
+from time import sleep, time
 
 __author__ = "John Jacques"
 __version__ = __VERSION__
@@ -24,6 +43,297 @@ def script_info():
     else:
         print("--> running on something unknown (TODO: find out)")
 
+def set_controls_to_default(camera):
+    controls = camera.get_controls()
+    for name in controls.keys():
+        camera.set_control_value(int(controls[name]['ControlType']),
+                                 int(repr(controls[name]['DefaultValue'])))
+
+def load_controls(camera, filename):
+    controls = camera.get_controls()
+    fp = open(filename, "rb")
+    settings = pickle.load(fp)
+    for name in controls.keys():
+        camera.set_control_value(int(controls[name]['ControlType']),
+                                 int(repr(settings[name])))
+    fp.close()
+
+def save_controls(camera, filename):
+    settings = camera.get_control_values()
+    fp = open(filename, "wb")
+    pickle.dump(settings, fp)
+    fp.close()
+
+def save_capture_settings(camera, filename):
+    settings = camera.get_control_values()
+    fp = open(filename, "w")
+    for k in sorted(settings.keys()):
+        fp.write('%s=%s\n' % (k, str(settings[k])))
+    fp.close()
+
+def save_capture(camera, filename):
+    controls = camera.get_controls()
+    camera.set_control_value(zwoasi.ASI_BANDWIDTHOVERLOAD,
+                             controls['BandWidth']['MinValue'])
+    camera.disable_dark_subtract()
+    camera.stop_video_capture()
+    camera.stop_exposure()
+    camera.set_image_type(zwoasi.ASI_IMG_RGB24)
+    camera.capture(filename=filename)
+
+class StreamingOutput(object):
+    def __init__(self):
+        self.frame = None
+        self.buffer = BytesIO()
+        self.condition = Condition()
+
+    def write(self, buf):
+        if buf.startswith(b'\xff\xd8'):
+            # New frame, copy the existing buffer's content and notify all
+            # clients it's available
+            self.buffer.truncate()
+            with self.condition:
+                self.frame = self.buffer.getvalue()
+                self.condition.notify_all()
+            self.buffer.seek(0)
+        return self.buffer.write(buf)
+
+class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
+    def __init__(self, address, handler, output_stream):
+        super(StreamingServer, self).__init__(address, handler)
+        self.output_stream = output_stream
+        # Used for invokers to know the camera has stopped responding
+        self.last_update_timestamp = time()
+
+class StreamingHandler(server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            self.send_response(301)
+            self.send_header('Location', '/stream.mjpg')
+            self.end_headers()
+        elif self.path == '/stream.mjpg':
+            self.send_response(200)
+            self.send_header('Age', 0)
+            self.send_header('Cache-Control', 'no-cache, private')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Content-Type',
+                             'multipart/x-mixed-replace; boundary=FRAME')
+            self.end_headers()
+            try:
+                while True:
+                    with self.server.output_stream.condition:
+                        self.server.output_stream.condition.wait()
+                        frame = self.server.output_stream.frame
+                    self.wfile.write(b'--FRAME\r\n')
+                    self.send_header('Content-Type', 'image/jpeg')
+                    self.send_header('Content-Length', len(frame))
+                    self.end_headers()
+                    self.wfile.write(frame)
+                    self.wfile.write(b'\r\n')
+            except Exception as e:
+                logging.warning(
+                    'Removed streaming client %s: %s',
+                    self.client_address, str(e))
+        else:
+            self.send_error(404)
+            self.end_headers()
+
+class AutoExposurer:
+    def __init__(self, maxGain, maxExp):
+        self.maxGain = maxGain
+        self.maxExp = maxExp
+        self.skipFrames = 0  # Introduce some latency in exposure adjustment
+        self.gainStep = 50 if maxGain > 400 else 10
+        self.targetBrightnessLow = 100
+        self.targetBrightnessHigh = 160
+        self.targetBrightness = (self.targetBrightnessHigh + self.targetBrightnessLow) / 2
+
+    # Returns (changed, newGain, newExp, med)
+    def adjustExp(self, gain, exp, img):
+        if self.skipFrames > 0:
+            self.skipFrames -= 1
+            return (False, None, None, 100)
+        med = np.median(img)
+        if self.targetBrightnessLow < med < self.targetBrightnessHigh:
+            return (False, None, None, med)
+        # Need to adjust exposure. Add a latency to give the camera some responding time.
+        self.skipFrames = 2
+        if med > self.targetBrightnessHigh:
+            ratio = med / self.targetBrightness # > 1.0
+            # Need to reduce exposure. Reduce gain if possible.
+            gainDelta = self.gainStep * log2(ratio)
+            if gain >= gainDelta:
+                return (True, int(gain - gainDelta), int(exp), med)
+            gainDeltaFulfilled = pow(2, gain)
+            exposureDelta = ratio / gainDeltaFulfilled
+            # We don't have a min epxosure
+            return (True, 0, int(exp / exposureDelta), med)
+        if med < self.targetBrightnessLow:
+            ratio = self.targetBrightness / med
+            # Need to bump exposure. Increase exposure if possible
+            if exp * ratio < self.maxExp:
+                return (True, gain, int(exp * ratio), med)
+            expDeltaFulfilled = self.maxExp / exp
+            gainDelta = self.gainStep * log2(ratio / expDeltaFulfilled)
+            newGain = min(self.maxGain, gainDelta + gain)
+            return (True, int(newGain), int(self.maxExp), med)
+
+class ZWOCamera(Thread):
+    def __init__(self, output_stream, interval=0):
+        super(ZWOCamera, self).__init__()
+        self.terminate = False
+        self.interval = interval
+        self.last_gain = 0
+        self.last_exposure = 0
+        # Optional hook for updating the watchdog, which monitors when
+        # the last frame was updated
+        self.server = None
+        self.continuousFailureCount = 0
+        self.maxContinuousFailureCount = 5
+        self.initialize_camera()
+
+        # auto stretch
+        self.auto_stretch = True
+        self.auto_stretch_threshold = 40
+        self.auto_stretch_target = 150
+
+        print('Camera initialization complete.')
+        self.stream = output_stream
+        self.start()
+
+    def initialize_camera(self):
+        print('Initializing camera...')
+        sleep(2)
+        num_cameras = zwoasi.get_num_cameras()
+        if num_cameras == 0:
+            raise RuntimeError('No ZWO camera was detected.')
+        try:
+            cameras_found = zwoasi.list_cameras()
+            self.camera = zwoasi.Camera(0)
+        except Exception as e:
+            print("Exception: " + str(e))
+            sys.exit(1)
+
+        # Uncomment to use binning
+        #self.camera.set_roi(bins=4)
+        camera_info = self.camera.get_camera_property()
+        print(camera_info)
+        controls = self.camera.get_controls()
+        print(controls)
+
+        self.camera.set_image_type(zwoasi.ASI_IMG_RGB24)
+
+        self.camera.set_control_value(zwoasi.ASI_BANDWIDTHOVERLOAD, 
+                                      self.camera.get_controls()['BandWidth']['DefaultValue'],
+                                      auto=True)
+
+        # Set auto exposure value
+        self.whbi = self.camera.get_roi_format()
+        self.camera.auto_wb()
+        # Uncomment to enable manual white balance
+        # self.camera.set_control_value(zwoasi.ASI_WB_B, 99)
+        # self.camera.set_control_value(zwoasi.ASI_WB_R, 75)
+        # Uncomment to use stock auto exposure
+        #self.useStockAutoExposure = True
+        #self.camera.set_control_value(zwoasi.ASI_AUTO_MAX_GAIN, 425)
+        #self.camera.set_control_value(zwoasi.ASI_AUTO_MAX_BRIGHTNESS, 130)
+        #self.camera.set_control_value(controls['AutoExpMaxExpMS']['ControlType'], 3000)
+        # Use our own auto exposure
+        self.useStockAutoExposure = False
+        maxGain = controls['Gain']['MaxValue']
+        self.autoExposurer = AutoExposurer(maxGain, 500000) # us
+        self.camera.set_control_value(zwoasi.ASI_EXPOSURE,
+                                 1000,
+                                 auto=self.useStockAutoExposure)
+        self.camera.set_control_value(zwoasi.ASI_GAIN,
+                                 0,
+                                 auto=self.useStockAutoExposure)
+        # Uncomment to enable flip
+        # self.camera.set_control_value(zwoasi.ASI_FLIP, 3)
+        self.camera.start_video_capture()
+
+    def run(self):
+        print('Start capturing...')
+        last_timestamp = 0
+        try:
+            while not self.terminate:
+                if time() < last_timestamp + self.interval:
+                    sleep(0.1)
+                    continue
+                last_timestamp = time()
+                settings = self.camera.get_control_values()
+                self.last_gain = settings['Gain']
+                self.last_exposure = settings['Exposure']
+                try:
+                    img = self.camera.capture_video_frame(timeout=max(5000, 500 + 10 * settings['Exposure'] / 1000))
+                    if self.server is not None:
+                        self.server.last_update_timestamp = time()
+                except Exception as e:
+                    print("Error: " + str(e))
+                    self.continuousFailureCount += 1
+                    if self.continuousFailureCount >= self.maxContinuousFailureCount:
+                        print("Max continuous failure count reached.. About to restart in 60 seconds.")
+                        sys.exit(1)
+                    self.camera.stop_exposure()
+                    self.camera.stop_video_capture()
+                    self.camera.close()
+                    self.initialize_camera()
+                    # Set the exposure and gain to the last known good value to reduce the auto exposure time
+                    self.camera.set_control_value(zwoasi.ASI_EXPOSURE,
+                                             self.last_exposure,
+                                             auto=self.useStockAutoExposure)
+                    self.camera.set_control_value(zwoasi.ASI_GAIN,
+                                             self.last_gain,
+                                             auto=self.useStockAutoExposure)
+                    continue
+                self.continuousFailureCount = 0
+                # Update the auto exposure
+                result = self.autoExposurer.adjustExp(self.last_gain, self.last_exposure, img)
+                if result is None:
+                    # For unknown reason, sometimes the result would be None. Simply retry would solve the issue
+                    result = self.autoExposurer.adjustExp(self.last_gain, self.last_exposure, img)
+                    if result is None:
+                        continue
+                changed, newGain, newExp, med = result
+                if changed:
+                    self.camera.set_control_value(zwoasi.ASI_EXPOSURE,
+                        newExp,
+                        auto=self.useStockAutoExposure)
+                    self.camera.set_control_value(zwoasi.ASI_GAIN,
+                        newGain,
+                        auto=self.useStockAutoExposure)
+                    print(f'Changed {changed} Med: {med} Gain: {newGain} Exposure: {newExp}')
+                else:
+                    print(f'Changed {changed} Med: {med} Gain: {self.last_gain} Exposure: {self.last_exposure}')
+                # convert the numpy array to PIL image
+                mode = None
+                if len(img.shape) == 3:
+                    img = img[:, :, ::-1]  # Convert BGR to RGB
+                if self.whbi[3] == zwoasi.ASI_IMG_RAW16:
+                    mode = 'I;16'
+                image = Image.fromarray(img, mode=mode)
+                # If the image is too dark, auto stretch it
+                stat = ImageStat.Stat(image)
+                mean = stat.mean[0]
+                if self.auto_stretch and mean < self.auto_stretch_threshold:
+                    # apply a gamma transform
+                    gamma = np.log(self.auto_stretch_target) / np.log(mean)
+                    arr = np.asarray(image)
+                    arr = np.minimum(255, np.power(arr, gamma)).astype('uint8')
+                    image = Image.fromarray(arr, mode=image.mode)
+                # Add some annotation
+                draw = ImageDraw.Draw(image)
+                pstring = datetime.now().strftime("%m/%d/%Y, %H:%M:%S") + f', gain {self.last_gain}, exp {self.last_exposure}'
+                draw.text((15, 15), pstring, fill='white')
+                # Write to the stream
+                image.save(self.stream, format='jpeg', quality=90)
+        finally:
+            self.camera.stop_video_capture()
+            self.camera.stop_exposure()
+
 ################################################################################
 ## Information
 ################################################################################
@@ -35,9 +345,12 @@ def info(camera):
         if name == 'Name':
             continue
         print('    %s:%s' % (name, info[name]))
+
     controls = camera.get_controls()
+    settings = camera.get_control_values()
     for name in sorted(controls.keys()):
-        print('\n    [%s/%s]' % (name, controls[name]['ControlType']))
+        print('\n    [%s/%s/%s]' %
+              (name, controls[name]['ControlType'], settings[name]))
         for key in sorted(controls[name].keys()):
             if key == 'Name' or key == 'ControlType':
                 continue
@@ -50,45 +363,31 @@ def info(camera):
 ## captured (using video capture) until SIGINT.
 ################################################################################
 
-focused = False
-
-def focus_capture(camera, options):
-    global focused
-    info = camera.get_camera_property()
-    logging.debug("Starting the capture thread! %s with %s" %
-                  (info['Name'], options))
-    while focused == False:
-        print("capturing... focused is " + str(focused) +
-              " options are " + str(options[:]))
-        time.sleep(1)
-
-def focus(camera, options):
-    global focused
+def focus(camera, settings, options):
     print('focus(' + str(options[:]) + ')')
+    stream_output = StreamingOutput()
+    thread = ZWOCamera(stream_output, 0)
     try:
-        focus_capture_thread = threading.Thread(target=focus_capture,
-                                                args=(camera, options))
-        focus_capture_thread.start()
-        while True:
-            time.sleep(100000)
-    except KeyboardInterrupt:
-        focused = True
-    focus_capture_thread.join()
+        address = ('', 8000)
+        server = StreamingServer(address, StreamingHandler, stream_output)
+        thread.server = server
+        print('Starting serving...')
+        server.serve_forever()
+    finally:
+        thread.terminate = True
 
 ################################################################################
-## capturing
+## Capture
 ################################################################################
 
-def save_capture_settings(filename, controls):
-    with open(filename, 'w') as f:
-        for k in sorted(controls.keys()):
-            f.write('%s=%s\n' % (k, str(controls[k])))
-
-def capture(camera, options):
+def capture(camera, settings, options):
     info = camera.get_camera_property()
     controls = camera.get_controls()
     logging.debug("capture(): Using %s, options are %s." %
                   (info['Name'], str(options[:])))
+    set_controls_to_default(camera) # Start with the defaults!
+    if os.path.exists(settings):
+        load_controls(camera, settings)
 
     # Process Arguments #
     #####################
@@ -104,34 +403,30 @@ def capture(camera, options):
             if (int(value) > controls['Exposure']['MaxValue'] or
                 int(value) < controls['Exposure']['MinValue']):
                 raise ValueError("exposure out of range!")
-            camera.set_control_value(asi.ASI_EXPOSURE, int(value))
+            camera.set_control_value(zwoasi.ASI_EXPOSURE, int(value))
 
     if 'filename' not in locals() or filename == "":
         raise ValueError("output MUST be specified!")
 
+    save_controls(camera, settings)
+
     # Capture! #
     ############
-    camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD,
-                             controls['BandWidth']['MinValue'])
-    camera.disable_dark_subtract()
-    camera.stop_video_capture()
-    camera.stop_exposure()
-    camera.set_image_type(asi.ASI_IMG_RGB24)
 
     if 'number' not in locals() or number == 1:
-        camera.capture(filename=filename)
-        save_capture_settings(filename + ".info", camera.get_control_values())
+        save_capture(camera, filename)
+        save_capture_settings(camera, filename + ".info")
     else:
         for i in range(0, number, 1):
             name = filename.split('.')
-            print(name)
             name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
-            print(name)
-            camera.capture(filename=name)
-            save_capture_settings(name + ".info", camera.get_control_values())
+            save_capture(camera, name)
+        name = filename.split('.')
+        name = name[0] + 'N' * len(str(number)) + '.' + name[1] + '.info'
+        save_capture_settings(camera, name)
 
 ################################################################################
-## When Used as a Script
+## When used as a script...
 ################################################################################
 
 def main(argv):
@@ -163,12 +458,12 @@ def main(argv):
     asilib = os.getenv('ZWO_ASI_LIB')
 
     if asilib:
-        asi.init(asilib)
+        zwoasi.init(asilib)
     else:
         logging.error("ZWO_ASI_LIB must be the full path to libASICamera2.so!")
         sys.exit(1)
 
-    num_cameras = asi.get_num_cameras()
+    num_cameras = zwoasi.get_num_cameras()
 
     if num_cameras == 0:
         logging.error("No Cameras Found")
@@ -176,7 +471,7 @@ def main(argv):
     else:
         logging.info("Cameras Found: " + str(num_cameras))
 
-    cameras = asi.list_cameras()
+    cameras = zwoasi.list_cameras()
 
     if args.command == 'list':
         for i in range(num_cameras):
@@ -185,7 +480,7 @@ def main(argv):
 
     id = int(unknown[0])
     if id < num_cameras:
-        camera = asi.Camera(id)
+        camera = zwoasi.Camera(id)
     else:
         logging.error('Invalid Camera ID')
         sys.exit(1)
@@ -193,14 +488,17 @@ def main(argv):
     unknown.pop(0)
     unknown = [x for y in unknown for x in y.split('=')]
 
+    settings = cameras[id] + "_" + str(id) + ".settings"
+    settings = settings.replace(" ", "_")
+
     # The rest of 'unknown' should be name/value pairs.
 
     if args.command == 'info':
         info(camera)
     elif args.command == 'focus':
-        focus(camera, unknown)
+        focus(camera, settings, unknown)
     elif args.command == 'capture':
-        capture(camera, unknown)
+        capture(camera, settings, unknown)
     else:
         logging.error("Unknown command: " + command)
         sys.exit(1)
