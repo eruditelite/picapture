@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 
-import argparse, logging, os, re, sys
+import argparse, logging, os, re, sys, threading, time
 import zwoasi as asi
 
 __author__ = "John Jacques"
 __version__ = __VERSION__
 __license__ = 'MIT'
+
+################################################################################
+## Functions for Modular Use
+################################################################################
 
 def script_info():
     print("--> " + os.path.basename(__file__) +
@@ -21,7 +25,7 @@ def script_info():
         print("--> running on something unknown (TODO: find out)")
 
 ################################################################################
-## Functions for Modular Use
+## Information
 ################################################################################
 
 def info(camera):
@@ -39,31 +43,92 @@ def info(camera):
                 continue
             print('        %s: %s' % (key, repr(controls[name][key])))
 
+################################################################################
+## Focus
+##
+## The idea is to start a web server that displays the latest image
+## captured (using video capture) until SIGINT.
+################################################################################
+
+focused = False
+
+def focus_capture(camera, options):
+    global focused
+    info = camera.get_camera_property()
+    logging.debug("Starting the capture thread! %s with %s" %
+                  (info['Name'], options))
+    while focused == False:
+        print("capturing... focused is " + str(focused) +
+              " options are " + str(options[:]))
+        time.sleep(1)
+
 def focus(camera, options):
-    print('focus(%s)' % options)
+    global focused
+    print('focus(' + str(options[:]) + ')')
+    try:
+        focus_capture_thread = threading.Thread(target=focus_capture,
+                                                args=(camera, options))
+        focus_capture_thread.start()
+        while True:
+            time.sleep(100000)
+    except KeyboardInterrupt:
+        focused = True
+    focus_capture_thread.join()
 
 ################################################################################
 ## capturing
 ################################################################################
 
-def save_capture_settings(filename, settings):
-    filename += '.txt'
+def save_capture_settings(filename, controls):
     with open(filename, 'w') as f:
-        for k in sorted(settings.keys()):
-            f.write('%s: %s\n' % (k, str(settings[k])))
+        for k in sorted(controls.keys()):
+            f.write('%s=%s\n' % (k, str(controls[k])))
 
 def capture(camera, options):
     info = camera.get_camera_property()
     controls = camera.get_controls()
-    camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD, camera.get_controls()['BandWidth']['MinValue'])
+    logging.debug("capture(): Using %s, options are %s." %
+                  (info['Name'], str(options[:])))
+
+    # Process Arguments #
+    #####################
+    it = iter(options)
+    for name in it:
+        value = next(it)
+        logging.debug("capture(): Processing %s %s" % (name, value))
+        if name == 'output':
+            filename = value
+        elif name == 'number':
+            number = int(value);
+        elif name == 'exposure':
+            if (int(value) > controls['Exposure']['MaxValue'] or
+                int(value) < controls['Exposure']['MinValue']):
+                raise ValueError("exposure out of range!")
+            camera.set_control_value(asi.ASI_EXPOSURE, int(value))
+
+    if 'filename' not in locals() or filename == "":
+        raise ValueError("output MUST be specified!")
+
+    # Capture! #
+    ############
+    camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD,
+                             controls['BandWidth']['MinValue'])
     camera.disable_dark_subtract()
-    camera.set_control_value(asi.ASI_EXPOSURE, 1000)
-    filename = 'image_color.png'
     camera.stop_video_capture()
     camera.stop_exposure()
     camera.set_image_type(asi.ASI_IMG_RGB24)
-    camera.capture(filename=filename)
-    save_capture_settings(filename, camera.get_control_values())
+
+    if 'number' not in locals() or number == 1:
+        camera.capture(filename=filename)
+        save_capture_settings(filename + ".info", camera.get_control_values())
+    else:
+        for i in range(0, number, 1):
+            name = filename.split('.')
+            print(name)
+            name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
+            print(name)
+            camera.capture(filename=name)
+            save_capture_settings(name + ".info", camera.get_control_values())
 
 ################################################################################
 ## When Used as a Script
@@ -126,6 +191,9 @@ def main(argv):
         sys.exit(1)
 
     unknown.pop(0)
+    unknown = [x for y in unknown for x in y.split('=')]
+
+    # The rest of 'unknown' should be name/value pairs.
 
     if args.command == 'info':
         info(camera)
