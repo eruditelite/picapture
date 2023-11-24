@@ -436,8 +436,13 @@ def main(argv):
                         choices=['DEBUG', 'INFO', 'WARNING',
                                  'ERROR', 'CRITICAL'], type=str.upper)
     parser.add_argument("--logfile", help="file for logger output")
-    parser.add_argument('-v', '--version', help="display the version", action="store_true")
-    parser.add_argument('-c', '--command', help="what to do...", choices = ['list', 'info', 'focus', 'capture'], default="list")
+    parser.add_argument('-v', '--version', help="display the version",
+                        action="store_true")
+    parser.add_argument('-c', '--command',
+                        help="Run a command: <index of camera> "
+                        "[list of name=value pairs]",
+                        choices = ['list', 'info', 'focus', 'capture'],
+                        default="list")
     args, unknown = parser.parse_known_args()
 
     # set up the logger
@@ -490,6 +495,9 @@ def main(argv):
 
     settings = cameras[id] + "_" + str(id) + ".settings"
     settings = settings.replace(" ", "_")
+
+    logging.info("args.commad: " + args.command + " unknown: " +
+                 repr(unknown) + " settings " + settings)
 
     # The rest of 'unknown' should be name/value pairs.
 
