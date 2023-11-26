@@ -1,0 +1,47 @@
+################################################################################
+## controller.py
+##
+## Get events from the Linux joystick input device.
+################################################################################
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
+
+import os
+import select
+import threading
+import time
+
+class Controller(threading.Thread):
+
+    def __init__(self, filename, logging, interval=100):
+        super().__init__()
+        self.terminate = False
+        self.filename = filename
+        self.logging = logging
+        self.interval = interval
+        self.start()
+
+    def run(self):
+        self.logging.info("Controller: starting")
+        fd = open(self.filename, "rb")
+        poll = select.poll()
+        poll.register(fd.fileno())
+        try:
+            while not self.terminate:
+                ret = poll.poll(self.interval)
+                for (desc, event) in ret:
+                    if desc == fd.fileno():
+                        buffer = fd.read(8)
+                        value = int.from_bytes(buffer[4:6],
+                                               "little", signed=True)
+                        type = int.from_bytes([buffer[6]],
+                                              "little", signed=False)
+                        id = int.from_bytes([buffer[7]],
+                                            "little", signed=False)
+                        if type < 128:
+                            print(f"value: {value} type: {type} id: {id}")
+        finally:
+            self.logging.info("Controller: stopping")
+            fd.close()
