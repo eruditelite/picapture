@@ -6,6 +6,7 @@ import numpy as np
 import os
 import pickle
 import re
+import select
 import socketserver
 import sys
 import tempfile
@@ -305,9 +306,17 @@ class ZWOCamera(Thread):
                     self.camera.set_control_value(zwoasi.ASI_GAIN,
                         newGain,
                         auto=self.useStockAutoExposure)
-                    print(f'Changed {changed} Med: {med} Gain: {newGain} Exposure: {newExp}')
-                else:
-                    print(f'Changed {changed} Med: {med} Gain: {self.last_gain} Exposure: {self.last_exposure}')
+                    #print(f'Changed {changed} Med: {med} Gain: {newGain} Exposure: {newExp}')
+#                else:
+#                    print(f'Changed {changed} Med: {med} Gain: {self.last_gain} Exposure: {self.last_exposure}')
+
+                # Check for Keyboard Input #
+                ############################
+
+                if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
+                    input = sys.stdin.readline()
+                    print("Got " + repr(input))
+
                 # convert the numpy array to PIL image
                 mode = None
                 if len(img.shape) == 3:
@@ -357,14 +366,14 @@ def info(camera):
             print('        %s: %s' % (key, repr(controls[name][key])))
 
 ################################################################################
-## Focus
+## Adjust
 ##
 ## The idea is to start a web server that displays the latest image
 ## captured (using video capture) until SIGINT.
 ################################################################################
 
-def focus(camera, settings, options):
-    print('focus(' + str(options[:]) + ')')
+def adjust(camera, settings, options):
+    print('adjust(' + str(options[:]) + ')')
     stream_output = StreamingOutput()
     thread = ZWOCamera(stream_output, 0)
     try:
@@ -441,7 +450,7 @@ def main(argv):
     parser.add_argument('-c', '--command',
                         help="Run a command: <index of camera> "
                         "[list of name=value pairs]",
-                        choices = ['list', 'info', 'focus', 'capture'],
+                        choices = ['list', 'info', 'adjust', 'capture'],
                         default="list")
     args, unknown = parser.parse_known_args()
 
@@ -503,8 +512,8 @@ def main(argv):
 
     if args.command == 'info':
         info(camera)
-    elif args.command == 'focus':
-        focus(camera, settings, unknown)
+    elif args.command == 'adjust':
+        adjust(camera, settings, unknown)
     elif args.command == 'capture':
         capture(camera, settings, unknown)
     else:
