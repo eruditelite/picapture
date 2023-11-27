@@ -7,8 +7,9 @@
 TAG = $(shell git describe --tags --always --dirty)
 
 %.py: %.py.in
+	rm -f $@
 	sed -e "s/__VERSION__/\"${TAG}\"/" $^ >$@
-	chmod 755 $@
+	chmod 544 $@
 
 %.py.d: %.py.in
 	@echo "$(shell echo $@ | sed -e 's/.d//') : $^" >$@
