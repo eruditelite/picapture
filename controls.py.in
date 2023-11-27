@@ -1,0 +1,86 @@
+################################################################################
+## controls.py
+##
+## Load, modify, save, etc. the camera control settings.
+################################################################################
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
+
+import pickle
+import sys
+import zwoasi
+
+class Controls(object):
+
+    def __init__(self, camera, logging):
+        super().__init__()
+        self.camera = camera
+        self.logging = logging
+        self.controls = camera.get_controls()
+        self.logging.debug(f"Created {self}")
+
+    def display(self):
+        values = self.camera.get_control_values()
+        for name in sorted(self.controls.keys()):
+            print('    [%s/%s/%s]' %
+                  (name, self.controls[name]['ControlType'], values[name]))
+            for key in sorted(self.controls[name].keys()):
+                if key == 'Name' or key == 'ControlType':
+                    continue
+                print('        %s: %s' % (key, repr(self.controls[name][key])))
+
+    def default(self):
+        self.logging.debug("Setting all controls to default...")
+        for name in self.controls.keys():
+            self.camera.\
+            set_control_value(int(self.controls[name]['ControlType']),
+                              int(repr(self.controls[name]['DefaultValue'])))
+
+    def load(self, filename):
+        self.logging.debug(f"Loading controls from {filename}...")
+        fp = open(filename, "rb")
+        settings = pickle.load(fp)
+        for name in self.controls.keys():
+            self.logging.debug(f"Setting {int(self.controls[name]['ControlType'])} to {int(repr(settings[name]))}")
+            self.camera.\
+                set_control_value(int(self.controls[name]['ControlType']),
+                                  int(repr(settings[name])))
+            fp.close()
+
+    def save(self, filename, text=False):
+        self.logging.debug(f"Saving controls to {filename}... ")
+        settings = self.camera.get_control_values()
+        if text:
+            fp = open(filename, "w")
+            for k in sorted(settings.keys()):
+                fp.write('%s=%s\n' % (k, str(settings[k])))
+        else:
+            fp = open(filename, "wb")
+            pickle.dump(settings, fp)
+        fp.close()
+        self.logging.debug("Done.")
+
+    def set(self, name, value):
+        if isinstance(name, str):
+            if name not in self.controls.keys():
+                raise ValueError(f"Couldn't find name {name}")
+        elif isinstance(name, int):
+            found = False
+            for key in self.controls.keys():
+                if self.controls[key]['ControlType'] == name:
+                    found = True
+                    name = key
+                    break
+            if not found:
+                raise ValueError(f"Couldn't find index {name}")
+        else:
+            raise ValueError("'name' must be a string or a number!")
+
+        if (value > self.controls[name]['MaxValue'] or
+            value < self.controls[name]['MinValue']):
+            raise ValueError("Value out of range!")
+        else:
+            self.camera.\
+                set_control_value(self.controls[name]['ControlType'], value)

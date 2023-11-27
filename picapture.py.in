@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+################################################################################
+## picapture.py
+################################################################################
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
+
 import argparse
 import logging
 import numpy as np
@@ -14,19 +22,17 @@ import threading
 import time
 import zwoasi
 
-from controller import Controller
+from controls import Controls
 from datetime import datetime
+from exposure import Exposure
 from http import server
 from io import BytesIO
 from math import log2, pow
+## NOTE: PIL is really Pillow...
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 from queue import Queue
 from threading import Condition, Thread
 from time import sleep, time
-
-__author__ = "John Jacques"
-__version__ = __VERSION__
-__license__ = 'MIT'
 
 ################################################################################
 ## Functions for Modular Use
@@ -45,34 +51,6 @@ def script_info():
     else:
         print("--> running on something unknown (TODO: find out)")
 
-def set_controls_to_default(camera):
-    controls = camera.get_controls()
-    for name in controls.keys():
-        camera.set_control_value(int(controls[name]['ControlType']),
-                                 int(repr(controls[name]['DefaultValue'])))
-
-def load_controls(camera, filename):
-    controls = camera.get_controls()
-    fp = open(filename, "rb")
-    settings = pickle.load(fp)
-    for name in controls.keys():
-        camera.set_control_value(int(controls[name]['ControlType']),
-                                 int(repr(settings[name])))
-    fp.close()
-
-def save_controls(camera, filename):
-    settings = camera.get_control_values()
-    fp = open(filename, "wb")
-    pickle.dump(settings, fp)
-    fp.close()
-
-def save_capture_settings(camera, filename):
-    settings = camera.get_control_values()
-    fp = open(filename, "w")
-    for k in sorted(settings.keys()):
-        fp.write('%s=%s\n' % (k, str(settings[k])))
-    fp.close()
-
 def save_capture(camera, filename):
     controls = camera.get_controls()
     camera.set_control_value(zwoasi.ASI_BANDWIDTHOVERLOAD,
@@ -82,6 +60,28 @@ def save_capture(camera, filename):
     camera.stop_exposure()
     camera.set_image_type(zwoasi.ASI_IMG_RGB24)
     camera.capture(filename=filename)
+
+def setup_capture(camera):
+    controls = camera.get_controls()
+    camera.set_control_value(zwoasi.ASI_BANDWIDTHOVERLOAD,
+                             controls['BandWidth']['MinValue'])
+    camera.disable_dark_subtract()
+    camera.stop_video_capture()
+    camera.stop_exposure()
+    camera.set_image_type(zwoasi.ASI_IMG_RGB24)
+    ## Without this, camera.capture() can throw an exception!
+    ## After the sleep, all captures work...
+    sleep(1)
+
+def raw_image_to_image(camera, raw_image):
+    whbi = camera.get_roi_format()
+    mode = None
+    if len(raw_image.shape) == 3:
+        raw_image = raw_image[:, :, ::-1] # convert bgr to rgb
+    if whbi[3] == zwoasi.ASI_IMG_RAW16:
+        mode = 'I;16'
+    image = Image.fromarray(raw_image, mode=mode)
+    return image
 
 class StreamingOutput(object):
     def __init__(self):
@@ -344,62 +344,29 @@ class ZWOCamera(Thread):
             self.camera.stop_video_capture()
             self.camera.stop_exposure()
 
-#def controller():
-#    jsfd = open("/dev/input/js0", "rb")
-#    poll = select.poll()
-#    poll.register(jsfd.fileno())
-#    while True:
-#        ret = poll.poll(100)
-#        for (fd, event) in ret:
-#            if fd == jsfd.fileno():
-#                buffer = jsfd.read(8)
-#                value = int.from_bytes(buffer[4:6], "little", signed=True)
-#                type = int.from_bytes([buffer[6]], "little", signed=False)
-#                id = int.from_bytes([buffer[7]], "little", signed=False)
-#                if type < 128:
-#                    print(f"value: {value} type: {type} id: {id}")
-
 ################################################################################
 ## Information
 ################################################################################
 
 def info(camera):
     info = camera.get_camera_property()
-    print('#### Info for %s ####\n' % (info['Name']))
+    print('#### Info for %s ####' % (info['Name']))
     for name in info.keys():
         if name == 'Name':
             continue
         print('    %s:%s' % (name, info[name]))
-
-    controls = camera.get_controls()
-    settings = camera.get_control_values()
-    for name in sorted(controls.keys()):
-        print('\n    [%s/%s/%s]' %
-              (name, controls[name]['ControlType'], settings[name]))
-        for key in sorted(controls[name].keys()):
-            if key == 'Name' or key == 'ControlType':
-                continue
-            print('        %s: %s' % (key, repr(controls[name][key])))
+    controls = Controls(camera, logging)
+    controls.display()
 
 ################################################################################
-## Adjust
+## Focus
 ##
 ## The idea is to start a web server that displays the latest image
 ## captured (using video capture) until SIGINT.
 ################################################################################
 
-def adjust(camera, settings, options):
-    print('adjust(' + str(options[:]) + ')')
-    stream_output = StreamingOutput()
-    thread = ZWOCamera(stream_output, 0)
-    try:
-        address = ('', 8000)
-        server = StreamingServer(address, StreamingHandler, stream_output)
-        thread.server = server
-        print('Starting serving...')
-        server.serve_forever()
-    finally:
-        thread.terminate = True
+def focus(camera, settings, options):
+    logging.debug(f"focus({camera}, {settings}, {options})")
 
 ################################################################################
 ## Capture
@@ -407,15 +374,16 @@ def adjust(camera, settings, options):
 
 def capture(camera, settings, options):
     info = camera.get_camera_property()
-    controls = camera.get_controls()
+    ctrls = camera.get_controls()
+    controls = Controls(camera, logging)
     logging.debug("capture(): Using %s, options are %s." %
                   (info['Name'], str(options[:])))
-    set_controls_to_default(camera) # Start with the defaults!
-    if os.path.exists(settings):
-        load_controls(camera, settings)
+    controls.default()
 
     # Process Arguments #
     #####################
+    adjust = False
+    histogram = False
     it = iter(options)
     for name in it:
         value = next(it)
@@ -425,30 +393,51 @@ def capture(camera, settings, options):
         elif name == 'number':
             number = int(value);
         elif name == 'exposure':
-            if (int(value) > controls['Exposure']['MaxValue'] or
-                int(value) < controls['Exposure']['MinValue']):
-                raise ValueError("exposure out of range!")
-            camera.set_control_value(zwoasi.ASI_EXPOSURE, int(value))
+            controls.set('Exposure', int(value))
+        elif name == 'gain':
+            controls.set('Gain', int(value))
+        elif name == 'offset':
+            controls.set('Offset', int(value))
+        elif name == 'wb_b':
+            controls.set('WB_B', int(value))
+        elif name == 'wb_r':
+            controls.set('WB_R', int(value))
+        elif name == 'histogram' and value == "true":
+            histogram = True
+        elif name == 'adjust' and value == "true":
+            adjust = True
+
+    if adjust == False:
+        histogram = False
+
+    controls.save(settings)
 
     if 'filename' not in locals() or filename == "":
         raise ValueError("output MUST be specified!")
 
-    save_controls(camera, settings)
-
     # Capture! #
     ############
 
+    setup_capture(camera)
+
     if 'number' not in locals() or number == 1:
-        save_capture(camera, filename)
-        save_capture_settings(camera, filename + ".info")
+        raw_image = camera.capture()
+        if adjust:
+            exposure = Exposure(camera, logging)
+            exposure.adjust(controls, raw_image, histogram)
+        image = raw_image_to_image(camera, raw_image)
+        image.save(filename)
+        controls.save(filename + ".info", True)
     else:
         for i in range(0, number, 1):
             name = filename.split('.')
             name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
-            save_capture(camera, name)
+            raw_image = camera.capture()
+            image = raw_image_to_image(camera, raw_image)
+            image.save(name)
         name = filename.split('.')
         name = name[0] + 'N' * len(str(number)) + '.' + name[1] + '.info'
-        save_capture_settings(camera, name)
+        controls.save(name, True)
 
 ################################################################################
 ## When used as a script...
@@ -466,7 +455,7 @@ def main(argv):
     parser.add_argument('-c', '--command',
                         help="Run a command: <index of camera> "
                         "[list of name=value pairs]",
-                        choices = ['list', 'info', 'adjust', 'capture'],
+                        choices = ['list', 'info', 'focus', 'capture'],
                         default="list")
     args, unknown = parser.parse_known_args()
 
@@ -524,23 +513,12 @@ def main(argv):
     logging.info("args.commad: " + args.command + " unknown: " +
                  repr(unknown) + " settings " + settings)
 
-    controller_thread = Controller("/dev/input/js0", logging)
-    sleep(5)
-    controller_thread.terminate = True
-    print("TERMINATING")
-    sleep(5)
-    print("DONE")
-    sys.exit(0)
-
-#    controller()
-#    sys.exit(0)
-
     # The rest of 'unknown' should be name/value pairs.
 
     if args.command == 'info':
         info(camera)
-    elif args.command == 'adjust':
-        adjust(camera, settings, unknown)
+    elif args.command == 'focus':
+        focus(camera, settings, unknown)
     elif args.command == 'capture':
         capture(camera, settings, unknown)
     else:
