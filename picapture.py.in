@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+################################################################################
+## picapture.py
+################################################################################
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
 
 import argparse
 import logging
@@ -23,10 +30,6 @@ from PIL import Image, ImageDraw, ImageFont, ImageStat
 from queue import Queue
 from threading import Condition, Thread
 from time import sleep, time
-
-__author__ = "John Jacques"
-__version__ = __VERSION__
-__license__ = 'MIT'
 
 ################################################################################
 ## Functions for Modular Use
@@ -344,21 +347,6 @@ class ZWOCamera(Thread):
             self.camera.stop_video_capture()
             self.camera.stop_exposure()
 
-#def controller():
-#    jsfd = open("/dev/input/js0", "rb")
-#    poll = select.poll()
-#    poll.register(jsfd.fileno())
-#    while True:
-#        ret = poll.poll(100)
-#        for (fd, event) in ret:
-#            if fd == jsfd.fileno():
-#                buffer = jsfd.read(8)
-#                value = int.from_bytes(buffer[4:6], "little", signed=True)
-#                type = int.from_bytes([buffer[6]], "little", signed=False)
-#                id = int.from_bytes([buffer[7]], "little", signed=False)
-#                if type < 128:
-#                    print(f"value: {value} type: {type} id: {id}")
-
 ################################################################################
 ## Information
 ################################################################################
@@ -524,16 +512,14 @@ def main(argv):
     logging.info("args.commad: " + args.command + " unknown: " +
                  repr(unknown) + " settings " + settings)
 
-    controller_thread = Controller("/dev/input/js0", logging)
+    controller_queue = queue.Queue()
+    controller_thread = Controller("/dev/input/js0", controller_queue, logging)
     sleep(5)
     controller_thread.terminate = True
     print("TERMINATING")
     sleep(5)
     print("DONE")
     sys.exit(0)
-
-#    controller()
-#    sys.exit(0)
 
     # The rest of 'unknown' should be name/value pairs.
 

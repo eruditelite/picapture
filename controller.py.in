@@ -9,22 +9,31 @@ __version__ = __VERSION__
 __license__ = 'MIT'
 
 import os
+import queue
 import select
 import threading
 import time
 
 class Controller(threading.Thread):
 
-    def __init__(self, filename, logging, interval=100):
+    buttons = {
+        (1, 0): "x/blue",
+        (1, 1): "a/red",
+        (1, 2): "b/yellow",
+        (1, 3): "y/green"
+    }
+
+    def __init__(self, filename, queue, logging, interval=100):
         super().__init__()
         self.terminate = False
         self.filename = filename
+        self.queue = queue
         self.logging = logging
         self.interval = interval
         self.start()
 
     def run(self):
-        self.logging.info("Controller: starting")
+        self.logging.debug("Controller: starting")
         fd = open(self.filename, "rb")
         poll = select.poll()
         poll.register(fd.fileno())
@@ -43,5 +52,5 @@ class Controller(threading.Thread):
                         if type < 128:
                             print(f"value: {value} type: {type} id: {id}")
         finally:
-            self.logging.info("Controller: stopping")
+            self.logging.debug("Controller: stopping")
             fd.close()
