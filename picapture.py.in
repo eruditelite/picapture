@@ -382,6 +382,8 @@ def focus(camera, settings, options):
 
 ################################################################################
 ## Capture
+##
+## NOTE: This handles the 'exposure' command as well.
 ################################################################################
 
 def capture(camera, settings, options):
@@ -421,6 +423,9 @@ def capture(camera, settings, options):
 
     if adjust == False:
         histogram = False
+
+    if adjust and number != 1:
+        raise ValueError("in adjust mode, number must be 1")
 
     controls.save(settings)
 
@@ -467,7 +472,8 @@ def main(argv):
     parser.add_argument('-c', '--command',
                         help="Run a command: <index of camera> "
                         "[list of name=value pairs]",
-                        choices = ['list', 'info', 'focus', 'capture'],
+                        choices = ['list', 'info', 'exposure',
+                                   'focus', 'capture'],
                         default="list")
     args, unknown = parser.parse_known_args()
 
@@ -529,6 +535,10 @@ def main(argv):
 
     if args.command == 'info':
         info(camera)
+    elif args.command == 'exposure':
+        capture(camera, settings,
+                [ 'number', '1', 'adjust', 'true', 'histogram', 'true' ] +
+                unknown)
     elif args.command == 'focus':
         focus(camera, settings, unknown)
     elif args.command == 'capture':

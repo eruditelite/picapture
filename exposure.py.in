@@ -33,17 +33,11 @@ class Exposure(object):
         if roi[3] == zwoasi.ASI_IMG_RAW16:
             mode = 'I;16'
         image = PIL.Image.fromarray(raw_image, mode=mode)
-        median_image = numpy.median(raw_image)
-        print(f"median of the image is {median_image}")
         histogram = image.histogram()
         histR = histogram[0:255]
         histG = histogram[256:511]
         histB = histogram[512:767]
         median_histogram = statistics.median(histogram)
-        medR = statistics.median(histR)
-        medG = statistics.median(histG)
-        medB = statistics.median(histB)
-        print(f"median of the histograms {medR}/{medG}/{medB}")
 
         if show_hist:
             x = list(range(0, 100))
@@ -52,3 +46,10 @@ class Exposure(object):
             figure.plot(x, histG, label="histG")
             figure.plot(x, histB, label="histB")
             figure.show()
+
+        medR = statistics.median(histR)
+        medG = statistics.median(histG)
+        medB = statistics.median(histB)
+        print(f"median of the histograms {medR}/{medG}/{medB}")
+        median_image = numpy.median(raw_image)
+        print(f"median of the image is {median_image}")
