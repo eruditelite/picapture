@@ -11,20 +11,23 @@ __license__ = 'MIT'
 import argparse
 import logging
 import numpy as np
+import numpy
 import os
 import pickle
+import PIL
 import re
 import select
 import socketserver
+import statistics
 import sys
 import tempfile
+import termplotlib
 import threading
 import time
 import zwoasi
 
 from controls import Controls
 from datetime import datetime
-from exposure import Exposure
 from http import server
 from io import BytesIO
 from math import log2, pow
@@ -73,14 +76,39 @@ def setup_capture(camera):
     ## After the sleep, all captures work...
     sleep(1)
 
-def raw_image_to_image(camera, raw_image):
-    whbi = camera.get_roi_format()
+def to_image(camera, raw, stats=False, hist=False):
+    logging.debug(f"display_exposure({camera}, {raw}, {stats}, {hist}")
+    roi = camera.get_roi_format()
     mode = None
-    if len(raw_image.shape) == 3:
-        raw_image = raw_image[:, :, ::-1] # convert bgr to rgb
-    if whbi[3] == zwoasi.ASI_IMG_RAW16:
+
+    if len(raw.shape) == 3:
+        raw = raw[:, :, ::-1]   # convert bgr to rgb
+    if roi[3] == zwoasi.ASI_IMG_RAW16:
         mode = 'I;16'
-    image = Image.fromarray(raw_image, mode=mode)
+
+    image = PIL.Image.fromarray(raw, mode=mode)
+    histogram = image.histogram()
+    histR = histogram[0:255]
+    histG = histogram[256:511]
+    histB = histogram[512:767]
+    median_histogram = statistics.median(histogram)
+
+    if hist:
+        x = list(range(0, 255))
+        figure = termplotlib.figure()
+        figure.plot(x, histR, label="histR")
+        figure.plot(x, histG, label="histG")
+        figure.plot(x, histB, label="histB")
+        figure.show()
+
+    if stats:
+        medR = statistics.median(histR)
+        medG = statistics.median(histG)
+        medB = statistics.median(histB)
+        print(f"median of the histograms {medR}/{medG}/{medB}")
+        median_image = numpy.median(raw)
+        print(f"median of the image is {median_image}")
+
     return image
 
 class StreamingOutput(object):
@@ -409,20 +437,12 @@ def capture(camera, settings, options):
             filename = value
         elif name == 'number':
             number = int(value);
-        elif name == 'exposure':
-            controls.set('Exposure', int(value))
-        elif name == 'gain':
-            controls.set('Gain', int(value))
-        elif name == 'offset':
-            controls.set('Offset', int(value))
-        elif name == 'wb_b':
-            controls.set('WB_B', int(value))
-        elif name == 'wb_r':
-            controls.set('WB_R', int(value))
-        elif name == 'histogram' and value == "true":
-            histogram = True
         elif name == 'adjust' and value == "true":
             adjust = True
+        elif name == 'histogram' and value == "true":
+            histogram = True
+        else:
+            controls.set(name, int(value))
 
     if adjust == False:
         histogram = False
@@ -442,10 +462,7 @@ def capture(camera, settings, options):
 
     if 'number' not in locals() or number == 1:
         raw_image = camera.capture()
-        if adjust:
-            exposure = Exposure(camera, logging)
-            exposure.adjust(controls, raw_image, histogram)
-        image = raw_image_to_image(camera, raw_image)
+        image = to_image(camera, raw_image, adjust, histogram)
         image.save(filename)
         controls.save(filename + ".info", True)
     else:
