@@ -461,16 +461,16 @@ def capture(camera, settings, options):
     setup_capture(camera)
 
     if 'number' not in locals() or number == 1:
-        raw_image = camera.capture()
-        image = to_image(camera, raw_image, adjust, histogram)
+        raw = camera.capture()
+        image = to_image(camera, raw, adjust, histogram)
         image.save(filename)
         controls.save(filename + ".info", True)
     else:
         for i in range(0, number, 1):
             name = filename.split('.')
             name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
-            raw_image = camera.capture()
-            image = raw_image_to_image(camera, raw_image)
+            raw = camera.capture()
+            image = to_image(camera, raw)
             image.save(name)
         name = filename.split('.')
         name = name[0] + 'N' * len(str(number)) + '.' + name[1] + '.info'
