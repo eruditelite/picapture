@@ -367,6 +367,18 @@ def info(camera):
 
 def focus(camera, settings, options):
     logging.debug(f"focus({camera}, {settings}, {options})")
+    stream_output = StreamingOutput()
+    # Uncomment to use the proper camera
+    # from RPiCamera import RPiCamera
+    # thread = RPiCamera(stream_output, latest_output, logger, 0)
+    thread = ZWOCamera(stream_output, 0)
+    try:
+        address = ('', 8000)
+        server = StreamingServer(address, StreamingHandler, stream_output)
+        thread.server = server
+        server.serve_forever()
+    finally:
+        thread.terminate = True
 
 ################################################################################
 ## Capture
