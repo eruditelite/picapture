@@ -1,0 +1,97 @@
+################################################################################
+## streamer.py
+##
+## Create a webpage that shows the latest image sent.
+##
+################################################################################
+
+__author__ = "John Jacques"
+__version__ = __VERSION__
+__license__ = 'MIT'
+
+import http
+import os
+import queue
+import socketserver
+import time
+
+class _StreamerServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    allow_reuse_address = True
+    daemon_threads = True
+
+    def __init__(self, address, handler, output):
+        super(StreamingServer, self).__init__(address, handler)
+        self.output_stream = output
+        # Used for invokers to know the camera has stopped responding
+        self.last_update_timestamp = time()
+
+class Streamer(threading.Thread):
+
+    buttons = {
+        (0, 1, 0): "x/blue off",
+        (1, 1, 0): "x/blue on",
+        (0, 1, 1): "a/red off",
+        (1, 1, 1): "a/red on",
+        (0, 1, 2): "b/yellow off",
+        (1, 1, 2): "b/yellow on",
+        (0, 1, 3): "y/green off",
+        (1, 1, 3): "y/green on",
+        (0, 1, 8): "select off",
+        (1, 1, 8): "select on",
+        (0, 1, 9): "start off",
+        (1, 1, 9): "start on",
+        (0, 2, 1): "RA neutral",
+        (-32767, 2, 1): "RA minus",
+        (32767, 2, 1): "RA plus",
+        (0, 2, 0): "DEC neutral",
+        (-32767, 2, 0): "DEC minus",
+        (32767, 2, 0): "DEC plus",
+        (0, 1, 4): "L off",
+        (1, 1, 4): "L on",
+        (0, 1, 5): "R off",
+        (1, 1, 5): "R on"
+    }
+
+    def __init__(self, filename, queue, logging, interval=100):
+        super().__init__()
+        self.terminate = False
+        self.filename = filename
+        self.queue = queue
+        self.logging = logging
+        self.interval = interval
+        self.start()
+
+    def run(self):
+        self.logging.debug("Controller: starting")
+        fd = open(self.filename, "rb")
+        poll = select.poll()
+        poll.register(fd.fileno())
+        try:
+            while not self.terminate:
+                ret = poll.poll(self.interval)
+                for (desc, event) in ret:
+                    if desc == fd.fileno():
+                        buffer = fd.read(8)
+                        value = int.from_bytes(buffer[4:6],
+                                               "little", signed=True)
+                        type = int.from_bytes([buffer[6]],
+                                              "little", signed=False)
+                        id = int.from_bytes([buffer[7]],
+                                            "little", signed=False)
+                        if type < 128:
+                            event = (value, type, id)
+                            self.logging.debug(f"value: {value} "
+                                               f"type: {type} id: {id} "
+                                               f"label: "
+                                               f"{Controller.button(event)}")
+                            self.queue.put(event)
+        finally:
+            self.logging.debug("Controller: stopping")
+            fd.close()
+
+    @staticmethod
+    def button(event):
+        if event in Controller.buttons:
+            return Controller.buttons[event]
+        else:
+            return "Unknown Button!"
