@@ -41,12 +41,19 @@ class Controls(object):
     def load(self, filename):
         self.logging.debug(f"Loading controls from {filename}...")
         fp = open(filename, "rb")
-        settings = pickle.load(fp)
+        current_values = self.camera.get_control_values()
+        values = pickle.load(fp)
         for name in self.controls.keys():
-            self.logging.debug(f"Setting {int(self.controls[name]['ControlType'])} to {int(repr(settings[name]))}")
+            if str(self.controls[name]['IsWritable']) is "False":
+                self.logging.debug(f"{name} is not writable!")
+                continue
+            if values[name] == current_values[name]:
+                self.logging.debug(f"{name} has not changed!")
+                continue
+            self.logging.debug(f"Changing {name}/{int(self.controls[name]['ControlType'])} from {current_values[name]} to {int(repr(values[name]))}")
             self.camera.\
                 set_control_value(int(self.controls[name]['ControlType']),
-                                  int(repr(settings[name])))
+                                  int(repr(values[name])))
             fp.close()
 
     def save(self, filename, text=False):
