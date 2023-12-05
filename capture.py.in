@@ -179,13 +179,21 @@ class Capture(object):
 
         ## Get the captures.
         for i in range(0, number, 1):
-            name = output.split('.')
-            name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
+            if number > 1:
+                name = output.split('.')
+                name = name[0] + str(i).zfill(len(str(number))) + "." + name[1]
+            else:
+                name = output
+
             raw = self.camera.capture()
             image = self.convert_to_image(raw)
             image.save(name)
 
         ## Save the control values used in a file.
-        name = output.split('.')
-        name = name[0] + 'N' * len(str(number)) + '.' + name[1] + '.info'
+        if number > 1:
+            name = output.split('.')
+            name = name[0] + 'N' * len(str(number)) + '.' + name[1] + '.info'
+        else:
+            name = output + '.info'
+
         controls.save(name, True)

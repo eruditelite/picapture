@@ -133,12 +133,11 @@ def main(argv):
         capture.adjust(settings, unknown, output)
     elif args.command == 'focus':
         output = unknown[0]
-        unknown.pop(0)
         capture = Capture(camera, logging)
         capture.focus(settings, output)
     elif args.command == 'capture':
-        output = unknown[0]
-        number = unknown[1]
+        number = unknown[0]
+        output = unknown[1]
         capture = Capture(camera, logging)
         capture.capture(settings, output, int(number))
     else:
