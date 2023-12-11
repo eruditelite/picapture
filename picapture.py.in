@@ -12,6 +12,7 @@ import argparse
 import logging
 import os
 import sys
+import textwrap
 import zwoasi
 
 from capture import Capture
@@ -54,7 +55,28 @@ def info(camera):
 
 def main(argv):
     # parse arguments
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog='picapture',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=textwrap.dedent('''\
+Expected use would be to run 'list' to find a camera, 'info' if
+needed, 'adjust' to set the exposure (note that this step saves a file
+with the selected control values for the given camera!), 'focus' to
+focus, and then 'capture' to capture.  'focus' and 'capture' use the
+control values saved by 'adjust', so run 'adjust' again to change
+control values.
+
+-c list
+    List the available cameras.
+-c info <camera index>
+    Display the properties and controls of the given camera.
+-c adjust <camera> <scale> [<control name>=<value>, ...]
+    Set the value(s) of the control(s) for the given camera.  A
+    file is saved containing the values for all the controls.
+-c focus <camera> <scale>
+    Continually update the image.
+        ''')
+    )
     parser.add_argument('--loglevel', help="logger level",
                         choices=['DEBUG', 'INFO', 'WARNING',
                                  'ERROR', 'CRITICAL'], type=str.upper)
@@ -62,10 +84,11 @@ def main(argv):
     parser.add_argument('-v', '--version', help="display the version",
                         action="store_true")
     parser.add_argument('-c', '--command',
-                        help="Run a command: <index of camera> "
+                        help="Run a command: <index of camera>"
                         "[list of name=value pairs]",
                         choices = ['list', 'info', 'adjust', 'focus', 'capture'],
-                        default="list")
+                        default="list",
+                        metavar='')
     args, unknown = parser.parse_known_args()
 
     # set up the logger
@@ -127,14 +150,14 @@ def main(argv):
     if args.command == 'info':
         info(camera)
     elif args.command == 'adjust':
-        output = unknown[0]
+        scale = unknown[0]
         unknown.pop(0)
         capture = Capture(camera, logging)
-        capture.adjust(settings, unknown, output)
+        capture.adjust(settings, scale, unknown)
     elif args.command == 'focus':
-        output = unknown[0]
+        scaling = unknown[0]
         capture = Capture(camera, logging)
-        capture.focus(settings, output)
+        capture.focus(settings, scaling)
     elif args.command == 'capture':
         number = unknown[0]
         output = unknown[1]

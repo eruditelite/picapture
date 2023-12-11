@@ -16,6 +16,9 @@ __license__ = 'MIT'
 import logging
 import numpy
 import os
+## This skips the pygame banner on the console.
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = ""
+import pygame
 import select
 import statistics
 import termplotlib
@@ -23,6 +26,7 @@ import time
 import zwoasi
 
 from controls import Controls
+from math import floor
 from PIL import Image
 from time import sleep
 
@@ -92,19 +96,29 @@ class Capture(object):
     ## adjust
     ##
     ## Takes one capture with the given values, saves the values, displays the
-    ## histograms and medians.
+    ## histograms, medians and the image.
     #############################################################################
 
-    def adjust(self, settings_file, values, output_file):
+    def adjust(self, settings, scale, values):
 
-        logging.debug(f"Capture.adjust("
-                      f"{settings_file}, {values}, {output_file}")
+        logging.debug(f"Capture.adjust({settings}, {scale}, {values}")
+
+        ## Get the size of the thumbnail using scale and the camera properties.
+        info = self.camera.get_camera_property()
+        size = (int(floor(float(info['MaxWidth']) * float(scale))),
+                int(floor(float(info['MaxHeight']) * float(scale))))
 
         ## As we're adjusting the "exposure", don't use a
         ## settings file.  Start with the defaults and add
         ## changes passed in 'settings'.
         controls = Controls(self.camera, self.logging)
         controls.default()
+
+        ## Set up 'pygame' for display.
+        pygame.init()
+        display = pygame.display.set_mode(size)
+        pygame.display.set_caption("Adjusting...")
+        clock = pygame.time.Clock()
 
         ## 'values' should be a list of values to write to the
         ## camera's controls as name, value pairs.
@@ -115,16 +129,34 @@ class Capture(object):
             controls.set(name, int(value))
 
         ## Once set, save to the 'settings_file" for future use!
-        controls.save(settings_file)
+        controls.save(settings)
 
         ## Set the camera up for capture.
         self.setup_capture()
 
-        ## Take one capture and save it.
+        ## Take one capture and display it.
         raw = self.camera.capture()
         image = self.convert_to_image(raw, True, True)
-        image.save(output_file)
-        controls.save(output_file + ".info", True)
+        image.thumbnail(size, Image.LANCZOS)
+        surface = pygame.image.\
+            fromstring(image.tobytes(), image.size, image.mode)
+        display.fill((255, 255, 255))
+        display.blit(surface, (0, 0))
+        pygame.display.flip()
+        clock.tick(60)
+
+        try:
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        raise KeyboardInterrupt
+                    elif event.type == pygame.KEYDOWN and \
+                         event.key == pygame.K_ESCAPE:
+                        raise KeyboardInterrupt
+        except KeyboardInterrupt:
+            print()
+            logging.debug("Capture.adjust: Ending...")
+
 
     #############################################################################
     ## focus
@@ -133,24 +165,47 @@ class Capture(object):
     ## control values from 'settings_file'.
     #############################################################################
 
-    def focus(self, settings_file, output_file):
+    def focus(self, settings, scale):
 
-        logging.debug(f"Capture.focus("
-                      f"{settings_file}, {output_file}")
+        logging.debug(f"Capture.focus({settings}, {scale}")
+
+        ## Get the size of the thumbnail using scale and the camera properties.
+        info = self.camera.get_camera_property()
+        size = (int(floor(float(info['MaxWidth']) * float(scale))),
+                int(floor(float(info['MaxHeight']) * float(scale))))
 
         ## Load the settings.
         controls = Controls(self.camera, self.logging)
-        controls.load(settings_file)
+        controls.load(settings)
 
         ## Set the camera up for capture.
         self.setup_capture()
+
+        ## Set up 'pygame' for display.
+        pygame.init()
+        display = pygame.display.set_mode(size)
+        pygame.display.set_caption("Focusing...")
+        clock = pygame.time.Clock()
 
         ## Keep capturing images until interrupted.
         try:
             while True:
                 raw = self.camera.capture()
                 image = self.convert_to_image(raw)
-                image.save(output_file)
+                image.thumbnail(size, Image.LANCZOS)
+                surface = pygame.image.\
+                    fromstring(image.tobytes(), image.size, image.mode)
+                display.fill((255, 255, 255))
+                display.blit(surface, (0, 0))
+                pygame.display.flip()
+                clock.tick(60)
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: # Window Close
+                        raise KeyboardInterrupt
+                    elif event.type == pygame.KEYDOWN and \
+                         event.key == pygame.K_ESCAPE:
+                        raise KeyboardInterrupt
         except KeyboardInterrupt:
             print()
             logging.debug("Capture.focus: Ending...")
