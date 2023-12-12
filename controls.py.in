@@ -50,7 +50,8 @@ class Controls(object):
             if values[name] == current_values[name]:
                 self.logging.debug(f"{name} has not changed!")
                 continue
-            self.logging.debug(f"Changing {name}/{int(self.controls[name]['ControlType'])} from {current_values[name]} to {int(repr(values[name]))}")
+            self.logging.\
+                debug(f"Changing {name}/{int(self.controls[name]['ControlType'])} from {current_values[name]} to {int(repr(values[name]))}")
             self.camera.\
                 set_control_value(int(self.controls[name]['ControlType']),
                                   int(repr(values[name])))

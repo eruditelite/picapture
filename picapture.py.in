@@ -124,6 +124,17 @@ control values.
 
     cameras = zwoasi.list_cameras()
 
+    # 
+
+    for i in range(num_cameras):
+        settings = cameras[i] + ".settings"
+        settings = settings.replace(" ", "_")
+        if not os.path.isfile(settings):
+            camera = zwoasi.Camera(i)
+            controls = Controls(camera, logging)
+            controls.default()
+            controls.save(settings)
+
     if args.command == 'list':
         for i in range(num_cameras):
             print('%d : %s' % (i, cameras[i]))
@@ -139,7 +150,7 @@ control values.
     unknown.pop(0)
     unknown = [x for y in unknown for x in y.split('=')]
 
-    settings = cameras[id] + "_" + str(id) + ".settings"
+    settings = cameras[id] + ".settings"
     settings = settings.replace(" ", "_")
 
     logging.info("args.commad: " + args.command + " unknown: " +

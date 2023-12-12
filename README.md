@@ -2,9 +2,9 @@
 
 ## Overview ##
 
-I just have a ZWO ASI120MC-S to play with so far.  For this camera,
-I'm planning on using the ZWO SDK on a raspberry pi.  That being the
-case, install the SDK!  For my build system, put the
+I have two ZWO cameras, the ASI120MC-S and the ASI294MC.  For these
+cameras, I am planning on using the ZWO SDK on a raspberry pi.  That
+being the case, install the SDK!  For my build system, put the
 ASI_linux_mac_SDK* directory extracted from the downloaded SDK (see
 https://www.zwoastro.com/downloads/developers) in /opt.  For example,
 
@@ -13,6 +13,9 @@ https://www.zwoastro.com/downloads/developers) in /opt.  For example,
 Add the appropriate library directory to /etc/ld.so.conf and 'sudo
 ldconfg'.  On a laptop etc., use lib/x64.  On the pi, lib/armv8.  See
 README.txt in lib to allow camera access as a regular user.
+
+For Linux, use lib/x64/libASICamera2.so, and for Raspberry Pi, use
+lib/armv8/libASICamera2.so.  Just set ZWO_ASI_LIB to the library.
 
 ## C ##
 

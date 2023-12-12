@@ -150,9 +150,11 @@ class Capture(object):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         raise KeyboardInterrupt
-                    elif event.type == pygame.KEYDOWN and \
-                         event.key == pygame.K_ESCAPE:
-                        raise KeyboardInterrupt
+                    elif event.type == pygame.KEYDOWN:
+                        keys = pygame.key.get_pressed()
+                        if event.key == pygame.K_c and \
+                           (keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]):
+                            raise KeyboardInterrupt
         except KeyboardInterrupt:
             print()
             logging.debug("Capture.adjust: Ending...")
@@ -201,11 +203,13 @@ class Capture(object):
                 clock.tick(60)
 
                 for event in pygame.event.get():
-                    if event.type == pygame.QUIT: # Window Close
+                    if event.type == pygame.QUIT:
                         raise KeyboardInterrupt
-                    elif event.type == pygame.KEYDOWN and \
-                         event.key == pygame.K_ESCAPE:
-                        raise KeyboardInterrupt
+                    elif event.type == pygame.KEYDOWN:
+                        keys = pygame.key.get_pressed()
+                        if event.key == pygame.K_c and \
+                           (keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]):
+                            raise KeyboardInterrupt
         except KeyboardInterrupt:
             print()
             logging.debug("Capture.focus: Ending...")
