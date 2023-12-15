@@ -11,6 +11,7 @@ __license__ = 'MIT'
 import argparse
 import logging
 import os
+import re
 import sys
 import textwrap
 import zwoasi
@@ -68,27 +69,42 @@ control values.
 
 -c list
     List the available cameras.
--c info <camera index>
+
+For the rest of the commands, -i|--index is required.
+
+-c info
     Display the properties and controls of the given camera.
--c adjust <camera> <scale> [<control name>=<value>, ...]
+
+For the rest of the commands, -r|--roi and -s|--scale are optional.
+
+-c adjust [<control name>=<value>, ...]
     Set the value(s) of the control(s) for the given camera.  A
     file is saved containing the values for all the controls.
--c focus <camera> <scale>
+
+-c focus
     Continually update the image.
+
+-c capture <number of images> <output name.type>
+    Capture <number of images> images.
         ''')
     )
-    parser.add_argument('--loglevel', help="logger level",
-                        choices=['DEBUG', 'INFO', 'WARNING',
-                                 'ERROR', 'CRITICAL'], type=str.upper)
-    parser.add_argument("--logfile", help="file for logger output")
-    parser.add_argument('-v', '--version', help="display the version",
-                        action="store_true")
     parser.add_argument('-c', '--command',
-                        help="Run a command: <index of camera>"
-                        "[list of name=value pairs]",
+                        help="run a command -- see description below",
                         choices = ['list', 'info', 'adjust', 'focus', 'capture'],
                         default="list",
                         metavar='')
+    parser.add_argument('-i', '--index', help="camera index", metavar='')
+    parser.add_argument("--logfile", help="file for logger output")
+    parser.add_argument('--loglevel',
+                        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
+                                 'CRITICAL'], type=str.upper)
+    parser.add_argument('-r', '--roi',
+                        help="region of intrest -- x+y+width+height", metavar='')
+    parser.add_argument('-s', '--scale',
+                        help="scale for adjust/focus", metavar='')
+    parser.add_argument('-v', '--version', help="display the version",
+                        action="store_true")
+
     args, unknown = parser.parse_known_args()
 
     # set up the logger
@@ -106,6 +122,9 @@ control values.
     if args.version:
         script_info()
 
+    logging.info(f"args {args} unknown {unknown}")
+
+    # find the ZWO library
     asilib = os.getenv('ZWO_ASI_LIB')
 
     if asilib:
@@ -114,6 +133,7 @@ control values.
         logging.error("ZWO_ASI_LIB must be the full path to libASICamera2.so!")
         sys.exit(1)
 
+    # find cameras
     num_cameras = zwoasi.get_num_cameras()
 
     if num_cameras == 0:
@@ -124,8 +144,6 @@ control values.
 
     cameras = zwoasi.list_cameras()
 
-    # 
-
     for i in range(num_cameras):
         settings = cameras[i] + ".settings"
         settings = settings.replace(" ", "_")
@@ -135,45 +153,75 @@ control values.
             controls.default()
             controls.save(settings)
 
+    # handle the 'list' command
     if args.command == 'list':
         for i in range(num_cameras):
             print('%d : %s' % (i, cameras[i]))
         sys.exit(0)
 
-    id = int(unknown[0])
+    # for the rest of the commands, a camera index is required
+    if args.index is None:
+        logging.error("Camera index is required!")
+        sys.exit(1)
+
+    id = int(args.index)
     if id < num_cameras:
         camera = zwoasi.Camera(id)
     else:
         logging.error('Invalid Camera ID')
         sys.exit(1)
 
-    unknown.pop(0)
-    unknown = [x for y in unknown for x in y.split('=')]
+    # validate the scale, if given
+    if args.scale:
+        scale = float(args.scale)
+    else:
+        scale = 1.0
 
+    logging.info(f"scale is {scale}")
+
+    # validate the ROI if given
+    properties = camera.get_camera_property()
+
+    if args.roi:
+        roi = re.split('[xX\+]', args.roi)
+        if (int(roi[0]) + int(roi[2])) > int(properties['MaxWidth']):
+            logging.error(f"x + x offset {int(roi[0]) + int(roi[2])} > "
+                          f"width {int(properties['MaxWidth'])}!")
+            sys.exit(1)
+        elif (int(roi[1]) + int(roi[3])) > int(properties['MaxHeight']):
+            logging.error(f"y + y offset {int(roi[1]) + int(roi[3])} > "
+                          f"width {int(properties['MaxHeight'])}!")
+            sys.exit(1)
+    else:
+        roi = (int(properties['MaxWidth']), int(properties['MaxHeight']), 0, 0)
+
+    logging.info(f"ROI is {roi}")
+
+    # everything else should be list of name=value control settings
+    unknown = [x for y in unknown for x in y.split('=')]
+    logging.info(f"Camera control name=value pairs: {unknown}")
+
+    # come up with a name for the "settings" file and create it with the
+    # default values if there isn´t one.
+    # NOTE: this assumes every attached camera is a different model
     settings = cameras[id] + ".settings"
     settings = settings.replace(" ", "_")
+    logging.info(f"Settings file is {settings}")
 
-    logging.info("args.commad: " + args.command + " unknown: " +
-                 repr(unknown) + " settings " + settings)
-
-    # The rest of 'unknown' should be name/value pairs.
-
+    # handle the rest of the commands
     if args.command == 'info':
         info(camera)
     elif args.command == 'adjust':
-        scale = unknown[0]
-        unknown.pop(0)
         capture = Capture(camera, logging)
-        capture.adjust(settings, scale, unknown)
+        capture.adjust(settings, scale, roi, unknown)
     elif args.command == 'focus':
-        scaling = unknown[0]
         capture = Capture(camera, logging)
-        capture.focus(settings, scaling)
+        capture.focus(settings, scale, roi)
     elif args.command == 'capture':
         number = unknown[0]
         output = unknown[1]
         capture = Capture(camera, logging)
-        capture.capture(settings, output, int(number))
+        capture.capture(settings, roi, int(number), output)
     else:
         logging.error("Unknown command: " + command)
         sys.exit(1)

@@ -99,26 +99,14 @@ class Capture(object):
     ## histograms, medians and the image.
     #############################################################################
 
-    def adjust(self, settings, scale, values):
-
-        logging.debug(f"Capture.adjust({settings}, {scale}, {values}")
-
-        ## Get the size of the thumbnail using scale and the camera properties.
-        info = self.camera.get_camera_property()
-        size = (int(floor(float(info['MaxWidth']) * float(scale))),
-                int(floor(float(info['MaxHeight']) * float(scale))))
+    def adjust(self, settings, scale, roi, values):
+        logging.debug(f"Capture.adjust({settings}, {scale}, {roi}, {values})")
 
         ## As we're adjusting the "exposure", don't use a
         ## settings file.  Start with the defaults and add
         ## changes passed in 'settings'.
         controls = Controls(self.camera, self.logging)
         controls.default()
-
-        ## Set up 'pygame' for display.
-        pygame.init()
-        display = pygame.display.set_mode(size)
-        pygame.display.set_caption("Adjusting...")
-        clock = pygame.time.Clock()
 
         ## 'values' should be a list of values to write to the
         ## camera's controls as name, value pairs.
@@ -131,6 +119,21 @@ class Capture(object):
         ## Once set, save to the 'settings_file" for future use!
         controls.save(settings)
 
+        ## Set the region of interest (ROI).
+        self.camera.set_roi_format(int(roi[0]), int(roi[1]),
+                                   1, zwoasi.ASI_IMG_RGB24)
+        self.camera.set_roi_start_position(int(roi[2]), int(roi[3]))
+
+        ## Get the size of the thumbnail using scale and roi.
+        size = (int(floor(float(roi[0]) * float(scale))),
+                int(floor(float(roi[1]) * float(scale))))
+
+        ## Set up 'pygame' for display.
+        pygame.init()
+        display = pygame.display.set_mode(size)
+        pygame.display.set_caption("Adjusting...")
+        clock = pygame.time.Clock()
+
         ## Set the camera up for capture.
         self.setup_capture()
 
@@ -140,6 +143,7 @@ class Capture(object):
         image.thumbnail(size, Image.LANCZOS)
         surface = pygame.image.\
             fromstring(image.tobytes(), image.size, image.mode)
+        surface = pygame.transform.rotozoom(surface, 0, scale)
         display.fill((255, 255, 255))
         display.blit(surface, (0, 0))
         pygame.display.flip()
@@ -167,27 +171,30 @@ class Capture(object):
     ## control values from 'settings_file'.
     #############################################################################
 
-    def focus(self, settings, scale):
+    def focus(self, settings, scale, roi):
+        logging.debug(f"Capture.focus({settings}, {scale}, {roi})")
 
-        logging.debug(f"Capture.focus({settings}, {scale}")
-
-        ## Get the size of the thumbnail using scale and the camera properties.
-        info = self.camera.get_camera_property()
-        size = (int(floor(float(info['MaxWidth']) * float(scale))),
-                int(floor(float(info['MaxHeight']) * float(scale))))
-
-        ## Load the settings.
+        ## Control values -- the settings -- first.
         controls = Controls(self.camera, self.logging)
         controls.load(settings)
 
-        ## Set the camera up for capture.
-        self.setup_capture()
+        ## Set the region of interest (ROI).
+        self.camera.set_roi_format(int(roi[0]), int(roi[1]),
+                                   1, zwoasi.ASI_IMG_RGB24)
+        self.camera.set_roi_start_position(int(roi[2]), int(roi[3]))
+
+        ## Get the size of the thumbnail using scale and roi.
+        size = (int(floor(float(roi[0]) * float(scale))),
+                int(floor(float(roi[1]) * float(scale))))
 
         ## Set up 'pygame' for display.
         pygame.init()
         display = pygame.display.set_mode(size)
         pygame.display.set_caption("Focusing...")
         clock = pygame.time.Clock()
+
+        ## Set the camera up for capture.
+        self.setup_capture()
 
         ## Keep capturing images until interrupted.
         try:
@@ -197,6 +204,7 @@ class Capture(object):
                 image.thumbnail(size, Image.LANCZOS)
                 surface = pygame.image.\
                     fromstring(image.tobytes(), image.size, image.mode)
+                surface = pygame.transform.rotozoom(surface, 0, scale)
                 display.fill((255, 255, 255))
                 display.blit(surface, (0, 0))
                 pygame.display.flip()
@@ -224,14 +232,18 @@ class Capture(object):
     ##     the name has N* added to the name just before the suffix.
     #############################################################################
 
-    def capture(self, settings, output, number):
-
-        logging.debug(f"Capture.adjust("
-                      f"{settings}, {output}. {number})")
+    def capture(self, settings, roi, number, output):
+        logging.debug(f"Capture.adjust({settings}, {roi}, {number}, {output})")
 
         ## Load the settings.
         controls = Controls(self.camera, self.logging)
         controls.load(settings)
+
+        ## Set the region of interest (ROI).
+        self.camera.\
+            set_roi_format(int(roi[0]), int(roi[1]), 1, zwoasi.ASI_IMG_RGB24)
+        self.camera.\
+            set_roi_start_position(int(roi[2]), int(roi[3]))
 
         ## Set the camera up for capture.
         self.setup_capture()
