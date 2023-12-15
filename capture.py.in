@@ -143,7 +143,8 @@ class Capture(object):
         image.thumbnail(size, Image.LANCZOS)
         surface = pygame.image.\
             fromstring(image.tobytes(), image.size, image.mode)
-        surface = pygame.transform.rotozoom(surface, 0, scale)
+        if scale > 1.0:
+            surface = pygame.transform.rotozoom(surface, 0, scale)
         display.fill((255, 255, 255))
         display.blit(surface, (0, 0))
         pygame.display.flip()
@@ -204,7 +205,8 @@ class Capture(object):
                 image.thumbnail(size, Image.LANCZOS)
                 surface = pygame.image.\
                     fromstring(image.tobytes(), image.size, image.mode)
-                surface = pygame.transform.rotozoom(surface, 0, scale)
+                if scale > 1.0:
+                    surface = pygame.transform.rotozoom(surface, 0, scale)
                 display.fill((255, 255, 255))
                 display.blit(surface, (0, 0))
                 pygame.display.flip()
