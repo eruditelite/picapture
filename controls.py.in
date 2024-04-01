@@ -70,6 +70,10 @@ class Controls(object):
         fp.close()
         self.logging.debug("Done.")
 
+    def get(self, name):
+        values = self.camera.get_control_values()
+        return values[name]
+
     def set(self, name, value):
         if isinstance(name, str):
             if name not in self.controls.keys():

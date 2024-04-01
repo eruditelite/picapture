@@ -230,12 +230,18 @@ class Capture(object):
     ## Capture, with settings from the given file, one or more images.
     ##
     ## 'settings' is a file (binary) containing values for the controls.
+    ## 'roi' specifies a size in pixels and a starting coordinate.  Default
+    ##     is to use all pixels.
     ## 'output' is the name of the image(s) to save.  If 'number' is not 1,
-    ##     the name has N* added to the name just before the suffix.
+    ##     the name has N* added to the name just before the suffix.  'period'
+    ##     is the time between starting a capture and must be longer than the
+    ##     time it takes to capture an image.
     #############################################################################
 
-    def capture(self, settings, roi, number, output):
-        logging.debug(f"Capture.adjust({settings}, {roi}, {number}, {output})")
+    def capture(self, settings, roi, number, period, output):
+        logging.debug(
+            f"Capture.adjust({settings}, {roi}, {number}, {time}, {output})"
+        )
 
         ## Load the settings.
         controls = Controls(self.camera, self.logging)
@@ -258,9 +264,34 @@ class Capture(object):
             else:
                 name = output
 
-            raw = self.camera.capture()
+            exposure_status = self.camera.get_exposure_status()
+            if exposure_status != 0:
+                print(f"Exposure Status: {self.camera.get_exposure_status()}")
+
+            start_time = time.monotonic()
+
+            try:
+                raw = self.camera.capture()
+            except zwoasi.ZWO_CaptureError:
+                continue
+
+            captured_time = time.monotonic()
             image = self.convert_to_image(raw)
+            converted_time = time.monotonic()
             image.save(name)
+            saved_time = time.monotonic()
+            logging.info(
+                f"captured in {(captured_time - start_time):.3f}, "
+                f"converted in {(converted_time - captured_time):.3f}, "
+                f"and saved in {(saved_time - converted_time):.3f}"
+            )
+
+            sleep_time = period - (time. monotonic() - start_time)
+            time.sleep(sleep_time)
+            logging.info(
+                f"sleep_time: {sleep_time:.3f} "
+                f"time taken: {(time.monotonic() - start_time):.3f}"
+            )
 
         ## Save the control values used in a file.
         if number > 1:

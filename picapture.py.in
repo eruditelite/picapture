@@ -84,8 +84,9 @@ For the rest of the commands, -r|--roi and -s|--scale are optional.
 -c focus
     Continually update the image.
 
--c capture <number of images> <output name.type>
+-c capture <number of images> <capture period> <output name.type>
     Capture <number of images> images.
+    Period is in fractional seconds.
         ''')
     )
     parser.add_argument('-c', '--command',
@@ -219,9 +220,10 @@ For the rest of the commands, -r|--roi and -s|--scale are optional.
         capture.focus(settings, scale, roi)
     elif args.command == 'capture':
         number = unknown[0]
-        output = unknown[1]
+        period = unknown[1]
+        output = unknown[2]
         capture = Capture(camera, logging)
-        capture.capture(settings, roi, int(number), output)
+        capture.capture(settings, roi, int(number), float(period), output)
     else:
         logging.error("Unknown command: " + command)
         sys.exit(1)
